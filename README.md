@@ -4,3 +4,6 @@
 
 # Examples
 See `./examples`
+
+# Links
+- David Baraff, Andrew Witkin -- Physically based modelling
