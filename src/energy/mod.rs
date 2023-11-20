@@ -33,7 +33,6 @@ pub fn update_energy_for_springs(
 
         // spring_energy.energy = spring.spring_constant * delta_length.abs() * delta_length / 2.0;
         spring_energy.energy = spring.spring_constant * delta_length.powi(2) / 2.0;
-        println!("Updated spring energy. Set it to {}", spring_energy.energy);
     }
 }
 
@@ -42,11 +41,9 @@ pub fn update_energy_for_rigid_bodies(
 ) {
     for (rb, _b, t, mut e) in bodies_query.iter_mut() {
         e.energy = rb.compute_energy(t);
-        println!("Updated body energy. Set it to {}", e.energy);
     }
 }
 
 pub fn print_total_sum_of_energy(energy_query: Query<&Energy>) {
     let sum: f32 = energy_query.iter().map(|f| f.energy).sum();
-    println!("!!!!!! TOTAL SUM OF ENERGY IS {}", sum);
 }

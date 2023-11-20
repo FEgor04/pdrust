@@ -26,4 +26,3 @@ impl Body {
             .mul_vec3(world_coordinates - transform.translation);
     }
 }
-

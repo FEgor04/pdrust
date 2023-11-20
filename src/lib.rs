@@ -15,7 +15,7 @@ pub struct PDRustPlugin;
 impl bevy::prelude::Plugin for PDRustPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_systems(
-            Update,
+            FixedUpdate,
             (
                 clean_forces_and_torque,
                 gravity.after(clean_forces_and_torque),

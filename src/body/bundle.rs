@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::energy::Energy;
 
-use super::{Body,rigid_body::RigidBody};
+use super::{rigid_body::RigidBody, Body};
 
 #[derive(Bundle, Default)]
 pub struct RigidBodyBundle {
