@@ -76,7 +76,11 @@ impl RigidBody {
     /// Total velocity of a particle is a sum of its linear velocity (which equals to body velocity)
     /// and angular velocity.
     pub fn get_particle_velocity(&self, particle: Vec3, transform: &Transform) -> Vec3 {
-        self.get_particle_body_velocity(particle - transform.translation, transform)
+        let rotation_matrix = Mat3::from_quat(transform.rotation);
+        let inertia_tensor_inv =
+            rotation_matrix * self.intertia_tensor_body_inv * rotation_matrix.transpose();
+        let omega = inertia_tensor_inv * self.angular_momentum;
+        self.get_velocity() + omega.cross(particle - transform.translation)
     }
 
     /// Returns a velocity of a particle.
@@ -84,16 +88,13 @@ impl RigidBody {
     ///
     /// Total velocity of a particle is a sum of its linear velocity (which equals to body velocity)
     /// and angular velocity.
-    pub fn get_particle_body_velocity(&self, particle: Vec3, transform: &Transform) -> Vec3 {
-        let rotation_matrix = Mat3::from_quat(transform.rotation);
-        let inertia_tensor_inv =
-            rotation_matrix * self.intertia_tensor_body_inv * rotation_matrix.transpose();
-        let omega = inertia_tensor_inv * self.angular_momentum;
-        self.get_velocity() + omega.cross(particle)
+    pub fn get_particle_body_velocity(&self, particle_body: Vec3, transform: &Transform) -> Vec3 {
+        let particle = Body.body_to_world_coordinates(particle_body, transform);
+        self.get_particle_velocity(particle, transform)
     }
 
     /// Applies a force to a body.
-    /// Force is given in **World** coordinates, application_point_body is given in **Body**
+    /// `force` is given in **World** coordinates, `application_point_body` is given in **Body**
     /// coordinates.
     pub fn apply_force_body_coords(
         &mut self,
