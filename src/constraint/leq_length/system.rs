@@ -4,21 +4,21 @@ use bevy::prelude::*;
 
 use crate::body::{Body, RigidBody};
 
-use super::FixedLengthConstraint;
+use super::LowerThanOrEqualLengthConstraint;
 
-const constraints_integration_count: u32 = 10;
+const CONSTRAINTS_INTEGRATION_COUNT: u32 = 10;
 
-pub fn handle_fixed_length_constraints(
-    constraints: Query<&FixedLengthConstraint>,
+pub fn handle_leq_length_constraints(
+    constraints: Query<&LowerThanOrEqualLengthConstraint>,
     mut bodies_query: Query<
         (&mut Body, &mut Transform, Option<&mut RigidBody>),
-        Without<FixedLengthConstraint>,
+        Without<LowerThanOrEqualLengthConstraint>,
     >,
     time: Res<Time>,
 ) {
     let dt = time.delta_seconds();
-    let constraint_dt = dt / constraints_integration_count as f32;
-    for _ in 0..constraints_integration_count {
+    let constraint_dt = dt / CONSTRAINTS_INTEGRATION_COUNT as f32;
+    for _ in 0..CONSTRAINTS_INTEGRATION_COUNT {
         for constraint in &constraints {
             let [(b1, t1, mut rb1), (b2, t2, mut rb2)] = bodies_query
                 .get_many_mut([constraint.first_body, constraint.second_body])
@@ -43,7 +43,7 @@ pub fn handle_fixed_length_constraints(
             let current_length = relative_pos.length();
             let offset = constraint.length - current_length;
 
-            if offset.abs() <= 1e-4 {
+            if constraint.length > current_length {
                 continue;
             }
 
