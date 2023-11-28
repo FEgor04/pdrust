@@ -6,15 +6,17 @@ pub mod system;
 pub struct FixedLengthConstraint {
     first_body: Entity,
     second_body: Entity,
-    length: f32,
+    min_length: f32,
+    max_length: f32,
 }
 
 impl FixedLengthConstraint {
-    pub fn new(first_body: Entity, second_body: Entity, length: f32) -> Self {
+    pub fn new(first_body: Entity, second_body: Entity, min_length: f32, max_length: f32) -> Self {
         return Self {
             first_body,
             second_body,
-            length,
+            min_length,
+            max_length,
         };
     }
 }

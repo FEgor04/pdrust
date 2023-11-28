@@ -41,11 +41,15 @@ pub fn handle_fixed_length_constraints(
 
             let relative_pos = x1 - x2;
             let current_length = relative_pos.length();
-            let offset = constraint.length - current_length;
 
-            if offset.abs() <= 1e-4 {
+            if constraint.min_length <= current_length && current_length <= constraint.max_length {
                 continue;
             }
+            let offset = if current_length < constraint.min_length {
+                constraint.min_length - current_length
+            } else {
+                constraint.max_length - current_length
+            };
 
             let offset_dir = relative_pos.normalize();
 

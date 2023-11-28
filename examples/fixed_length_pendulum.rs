@@ -96,9 +96,9 @@ fn setup(
         ..Default::default()
     });
 
-    commands.spawn(FixedLengthConstraint::new(b1, anchor, l1));
+    commands.spawn(FixedLengthConstraint::new(b1, anchor, l1, l1));
 
-    commands.spawn(FixedLengthConstraint::new(b1, b2, l2));
+    commands.spawn(FixedLengthConstraint::new(b1, b2, l2, l2));
 
     // camera
     commands.spawn((

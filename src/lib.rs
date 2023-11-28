@@ -1,8 +1,5 @@
 use bevy::prelude::*;
-use constraint::{
-    fixed_length::system::handle_fixed_length_constraints,
-    leq_length::system::handle_leq_length_constraints,
-};
+use constraint::fixed_length::system::handle_fixed_length_constraints;
 use energy::{
     print_total_sum_of_energy, update_energy_for_rigid_bodies, update_energy_for_springs,
 };
@@ -26,7 +23,6 @@ impl bevy::prelude::Plugin for PDRustPlugin {
                 gravity.after(clean_forces_and_torque),
                 handle_spring_forces.after(gravity),
                 handle_fixed_length_constraints.after(handle_spring_forces),
-                handle_leq_length_constraints.after(handle_spring_forces),
                 step_in_simulation.after(handle_fixed_length_constraints),
                 update_energy_for_springs.after(update_spring_transformation),
                 update_energy_for_rigid_bodies.after(update_energy_for_springs),

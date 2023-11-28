@@ -5,7 +5,7 @@ use bevy::{
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, Body, RigidBody},
-    constraint::leq_length::LowerThanOrEqualLengthConstraint,
+    constraint::fixed_length::FixedLengthConstraint,
 };
 
 fn main() {
@@ -95,9 +95,9 @@ fn setup(
         ..Default::default()
     });
 
-    commands.spawn(LowerThanOrEqualLengthConstraint::new(b1, anchor, l1));
+    commands.spawn(FixedLengthConstraint::new(b1, anchor, 0.0, l1));
 
-    commands.spawn(LowerThanOrEqualLengthConstraint::new(b1, b2, l2));
+    commands.spawn(FixedLengthConstraint::new(b1, b2, 0.0, l2));
 
     // camera
     commands.spawn((

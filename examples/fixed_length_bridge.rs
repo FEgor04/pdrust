@@ -95,6 +95,7 @@ fn setup(
             bodies[i],
             bodies[i + 1],
             constrait_size,
+            constrait_size,
         ));
     }
 
