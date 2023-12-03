@@ -6,8 +6,8 @@ use bevy::{
 };
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
-    body::{self, bundle::RigidBodyBundle, Body, RigidBody},
-    springs::{bundle::SpringBundle, Spring},
+    body::{bundle::RigidBodyBundle, Body, RigidBody},
+    springs::bundle::SpringBundle,
 };
 
 fn main() {
@@ -52,24 +52,18 @@ fn setup(
         bodies.push(new_body);
     }
 
-    bodies.push(
-        commands
-            .spawn(RigidBodyBundle::new_box(
-                PbrBundle {
-                    mesh: meshes.add(shape::Box::new(1.0, 1.0, 1.0).into()),
-                    material: materials.add(Color::RED.into()),
-                    transform: Transform::from_translation(final_body_point),
-                    ..default()
-                },
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-                Vec3::ZERO,
-                Vec3::ZERO,
-            ))
-            .id(),
-    );
+    bodies.push(RigidBodyBundle::spawn_new_box(
+        &mut commands,
+        &mut meshes,
+        materials.add(Color::RED.into()),
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        Transform::from_translation(final_body_point),
+        Vec3::ZERO,
+        Vec3::ZERO,
+    ));
 
     for i in 1..bodies.len() - 1 {
         commands.spawn(SpringBundle::new(

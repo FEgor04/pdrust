@@ -6,8 +6,8 @@ use bevy::{
 };
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
-    body::{bundle::RigidBodyBundle, Body, RigidBody},
-    springs::{bundle::SpringBundle, Spring},
+    body::{bundle::RigidBodyBundle, Body},
+    springs::bundle::SpringBundle,
 };
 
 fn main() {
@@ -27,47 +27,54 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // cube
-    let b1 = commands
-        .spawn(RigidBodyBundle::new_box(
-            PbrBundle {
-                mesh: meshes.add(Mesh::from(shape::Box::new(1.0, 1.0, 1.0))),
-                material: materials.add(Color::RED.into()),
-                transform: Transform::from_xyz(5.0, 0.0, 5.0),
-                ..default()
-            },
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-            Vec3::ZERO,
-            Vec3::ZERO,
-        ))
-        .id();
+    // let b1 = commands
+    //     .spawn(RigidBodyBundle::new_box(
+    //         PbrBundle {
+    //             mesh: meshes.add(Mesh::from(shape::Box::new(1.0, 1.0, 1.0))),
+    //             material: materials.add(Color::RED.into()),
+    //             transform: Transform::from_xyz(5.0, 0.0, 5.0),
+    //             ..default()
+    //         },
+    //         1.0,
+    //         1.0,
+    //         1.0,
+    //         1.0,
+    //         Vec3::ZERO,
+    //         Vec3::ZERO,
+    //     ))
+    //     .id();
 
-    // cube
-    let b2 = commands
-        .spawn(RigidBodyBundle::new_box(
-            PbrBundle {
-                mesh: meshes.add(Mesh::from(shape::Box::new(2.0, 1.0, 2.0))),
-                material: materials.add(Color::RED.into()),
-                transform: Transform::from_xyz(5.0, 0.0, 0.0),
-                ..default()
-            },
-            1.0,
-            2.0,
-            1.0,
-            2.0,
-            Vec3::ZERO,
-            Vec3::ZERO,
-        ))
-        .id();
+    let b1 = RigidBodyBundle::spawn_new_box(
+        &mut commands,
+        &mut meshes,
+        materials.add(Color::RED.into()),
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        Transform::from_xyz(5.0, 0.0, 5.0),
+        Vec3::ZERO,
+        Vec3::ZERO,
+    );
 
-    let b3 = commands
+    let b2 = RigidBodyBundle::spawn_new_box(
+        &mut commands,
+        &mut meshes,
+        materials.add(Color::RED.into()),
+        1.0,
+        2.0,
+        1.0,
+        2.0,
+        Transform::from_xyz(5.0, 0.0, 0.0),
+        Vec3::ZERO,
+        Vec3::ZERO,
+    );
+
+    let anchor = commands
         .spawn((Transform::from_xyz(0.0, 5.0, 0.0), Body))
         .id();
 
-    let spring1 = commands
+    let _spring1 = commands
         .spawn(SpringBundle::new(
             b1,
             Vec3::new(0.5, 0.5, 0.5),
@@ -89,11 +96,11 @@ fn setup(
         ))
         .id();
 
-    let spring2 = commands
+    let _spring2 = commands
         .spawn(SpringBundle::new(
             b2,
             Vec3::new(0.0, 0.5, 0.0),
-            b3,
+            anchor,
             Vec3::new(0.0, 0.0, 0.0),
             5.0,
             5.0,

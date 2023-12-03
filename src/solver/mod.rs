@@ -21,7 +21,7 @@ pub fn step_in_simulation(mut query: Query<(&mut RigidBody, &mut Transform)>, ti
     let slow_motion_koef = 1;
     let substeps = 16;
     let dt = time.delta_seconds() / slow_motion_koef as f32 / (substeps as f32);
-    for step in 0..substeps {
+    for _step in 0..substeps {
         for (body, transform) in query.iter_mut() {
             solver.step(body, transform, dt);
         }

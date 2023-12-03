@@ -45,5 +45,5 @@ pub fn update_energy_for_rigid_bodies(
 }
 
 pub fn print_total_sum_of_energy(energy_query: Query<&Energy>) {
-    let sum: f32 = energy_query.iter().map(|f| f.energy).sum();
+    let _sum: f32 = energy_query.iter().map(|f| f.energy).sum();
 }

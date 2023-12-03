@@ -1,12 +1,8 @@
-use bevy::{
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    prelude::*,
-};
+use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
-    body::{bundle::RigidBodyBundle, Body, RigidBody},
-    constraint::fixed_length::FixedLengthConstraint,
-    springs::{bundle::SpringBundle, Spring},
+    body::{bundle::RigidBodyBundle, Body},
+    constraint::distance::bundle::DistanceConstraintBundle,
 };
 
 fn main() {
@@ -25,8 +21,8 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     let start = Vec3::new(-5.0, 0.0, 0.0);
-    let cube_size = 0.1;
-    let n = 10;
+    let cube_size = 0.2;
+    let n = 50;
     let constrait_size = 1.0;
 
     let mut bodies = vec![];
@@ -51,24 +47,19 @@ fn setup(
     for i in 0..n {
         let mut pos = start;
         pos.x += constrait_size * (i as f32 + 1.0) + cube_size * i as f32;
-        bodies.push(
-            commands
-                .spawn(RigidBodyBundle::new_box(
-                    PbrBundle {
-                        mesh: meshes.add(shape::Box::new(cube_size, cube_size, cube_size).into()),
-                        material: materials.add(Color::GREEN.into()),
-                        transform: Transform::from_translation(pos),
-                        ..default()
-                    },
-                    1.0,
-                    cube_size,
-                    cube_size,
-                    cube_size,
-                    Vec3::ZERO,
-                    Vec3::ZERO,
-                ))
-                .id(),
-        );
+
+        bodies.push(RigidBodyBundle::spawn_new_box(
+            &mut commands,
+            &mut meshes,
+            materials.add(Color::GREEN.into()),
+            1.0,
+            cube_size,
+            cube_size,
+            cube_size,
+            Transform::from_translation(pos),
+            Vec3::ZERO,
+            Vec3::ZERO,
+        ))
     }
 
     let mut final_pos = start;
@@ -79,7 +70,7 @@ fn setup(
                 Body,
                 PbrBundle {
                     mesh: meshes.add(Mesh::from(shape::UVSphere {
-                        radius: 0.1,
+                        radius: 0.2,
                         ..default()
                     })),
                     material: materials.add(Color::RED.into()),
@@ -91,12 +82,17 @@ fn setup(
     );
 
     for i in 0..bodies.len() - 1 {
-        commands.spawn(FixedLengthConstraint::new(
+        DistanceConstraintBundle::spawn_new(
+            &mut commands,
+            &mut meshes,
+            materials.add(Color::AZURE.into()),
             bodies[i],
             bodies[i + 1],
-            constrait_size,
-            constrait_size,
-        ));
+            Vec3::ZERO,
+            Vec3::ZERO,
+            0.0,
+            constrait_size * 1.1,
+        );
     }
 
     commands.spawn(DirectionalLightBundle {

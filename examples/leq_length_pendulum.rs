@@ -1,11 +1,8 @@
-use bevy::{
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    prelude::*,
-};
+use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
-    body::{bundle::RigidBodyBundle, Body, RigidBody},
-    constraint::fixed_length::FixedLengthConstraint,
+    body::{bundle::RigidBodyBundle, Body},
+    constraint::distance::bundle::DistanceConstraintBundle,
 };
 
 fn main() {
@@ -27,47 +24,27 @@ fn setup(
     let l2 = 2.0;
     let r = 0.25;
 
-    // cube
-    let b1 = commands
-        .spawn(RigidBodyBundle::new_box(
-            PbrBundle {
-                mesh: meshes.add(Mesh::from(shape::UVSphere {
-                    radius: r,
-                    ..default()
-                })),
-                material: materials.add(Color::RED.into()),
-                transform: Transform::from_xyz(l1, 0.0, 0.0),
-                ..default()
-            },
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-            Vec3::ZERO,
-            Vec3::ZERO,
-        ))
-        .id();
+    let b1 = RigidBodyBundle::spawn_new_sphere(
+        &mut commands,
+        &mut meshes,
+        materials.add(Color::RED.into()),
+        1.0,
+        r,
+        Transform::from_xyz(l1, 0.0, 0.0),
+        Vec3::ZERO,
+        Vec3::ZERO,
+    );
 
-    // cube
-    let b2 = commands
-        .spawn(RigidBodyBundle::new_box(
-            PbrBundle {
-                mesh: meshes.add(Mesh::from(shape::UVSphere {
-                    radius: r,
-                    ..default()
-                })),
-                material: materials.add(Color::RED.into()),
-                transform: Transform::from_xyz(l1, l2, 0.0),
-                ..default()
-            },
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-            Vec3::ZERO,
-            Vec3::ZERO,
-        ))
-        .id();
+    let b2 = RigidBodyBundle::spawn_new_sphere(
+        &mut commands,
+        &mut meshes,
+        materials.add(Color::RED.into()),
+        1.0,
+        r,
+        Transform::from_xyz(l1 + l2, 0.0, 0.0),
+        Vec3::ZERO,
+        Vec3::ZERO,
+    );
 
     let anchor = commands
         .spawn((
@@ -95,9 +72,29 @@ fn setup(
         ..Default::default()
     });
 
-    commands.spawn(FixedLengthConstraint::new(b1, anchor, 0.0, l1));
+    let _c1 = DistanceConstraintBundle::spawn_new(
+        &mut commands,
+        &mut meshes,
+        materials.add(Color::AZURE.into()),
+        anchor,
+        b1,
+        Vec3::ZERO,
+        Vec3::new(0.0, r, 0.0),
+        0.0,
+        l1,
+    );
 
-    commands.spawn(FixedLengthConstraint::new(b1, b2, 0.0, l2));
+    let _c2 = DistanceConstraintBundle::spawn_new(
+        &mut commands,
+        &mut meshes,
+        materials.add(Color::AZURE.into()),
+        b1,
+        b2,
+        Vec3::new(0.0, -r, 0.0),
+        Vec3::new(0.0, r, 0.0),
+        0.0,
+        l2,
+    );
 
     // camera
     commands.spawn((

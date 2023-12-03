@@ -62,11 +62,8 @@ impl RigidBody {
 
     /// Computes keenetic energy of the body
     pub fn compute_energy(&self, transform: &Transform) -> f32 {
-        let rotation_matrix = Mat3::from_quat(transform.rotation);
-        let inertia_tensor_inv =
-            rotation_matrix * self.intertia_tensor_body_inv * rotation_matrix.transpose();
-        let omega = inertia_tensor_inv * self.angular_momentum;
-        let angular_component = 0.5 * omega.dot(omega);
+        let angular_velocity = self.get_angular_velocity(transform);
+        let angular_component = 0.5 * angular_velocity.dot(angular_velocity);
         self.mass * self.get_velocity().length_squared() / 2.0 + angular_component
     }
 
@@ -76,11 +73,24 @@ impl RigidBody {
     /// Total velocity of a particle is a sum of its linear velocity (which equals to body velocity)
     /// and angular velocity.
     pub fn get_particle_velocity(&self, particle: Vec3, transform: &Transform) -> Vec3 {
-        let rotation_matrix = Mat3::from_quat(transform.rotation);
-        let inertia_tensor_inv =
-            rotation_matrix * self.intertia_tensor_body_inv * rotation_matrix.transpose();
-        let omega = inertia_tensor_inv * self.angular_momentum;
-        self.get_velocity() + omega.cross(particle - transform.translation)
+        let angular_velocity = self.get_angular_velocity(transform);
+        self.get_velocity() + angular_velocity.cross(particle - transform.translation)
+    }
+
+    pub fn get_angular_velocity(&self, transform: &Transform) -> Vec3 {
+        self.get_inertia_tensor_inv(transform) * self.angular_momentum
+    }
+
+    pub fn get_inertia_tensor(&self, transform: &Transform) -> Mat3 {
+        let r = Mat3::from_quat(transform.rotation);
+        let i = r * self.intertia_tensor_body * r.transpose();
+        i
+    }
+
+    pub fn get_inertia_tensor_inv(&self, transform: &Transform) -> Mat3 {
+        let r = Mat3::from_quat(transform.rotation);
+        let iinv = r * self.intertia_tensor_body_inv * r.transpose();
+        iinv
     }
 
     /// Returns a velocity of a particle.
@@ -135,6 +145,11 @@ impl RigidBody {
             Vec3::from_array([0.0, x_length.powi(2) + z_length.powi(2), 0.0]),
             Vec3::from_array([0.0, 0.0, x_length.powi(2) + y_length.powi(2)]),
         );
+        RigidBody::new(mass, inertia_tensor, pulse, angular_momentum)
+    }
+
+    pub fn new_sphere(mass: f32, r: f32, pulse: Vec3, angular_momentum: Vec3) -> Self {
+        let inertia_tensor = 2.0 / 5.0 * mass * r.powi(2) * Mat3::IDENTITY;
         RigidBody::new(mass, inertia_tensor, pulse, angular_momentum)
     }
 }
