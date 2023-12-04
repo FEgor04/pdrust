@@ -82,7 +82,7 @@ fn setup(
         anchor,
         b1,
         Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(0.5, 0.5, 0.5),
+        Vec3::new(-0.5, 0., 0.0),
         l1,
         l1,
     );
@@ -93,8 +93,8 @@ fn setup(
         materials.add(Color::AZURE.into()),
         b1,
         b2,
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.5, 0.0, 0.0),
+        Vec3::new(-0.5, 0.0, 0.0),
         l2,
         l2,
     );

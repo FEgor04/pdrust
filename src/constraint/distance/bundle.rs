@@ -17,8 +17,8 @@ impl DistanceConstraintBundle {
         second_body: Entity,
         first_body_offset: Vec3,
         second_body_offset: Vec3,
-        min_length: f32,
-        max_length: f32,
+        min_distance: f32,
+        max_distance: f32,
     ) -> Entity {
         commands
             .spawn(DistanceConstraintBundle {
@@ -27,8 +27,8 @@ impl DistanceConstraintBundle {
                     second_body,
                     first_body_offset,
                     second_body_offset,
-                    min_length,
-                    max_length,
+                    min_distance,
+                    max_distance,
                 },
                 pbr_bundle: PbrBundle {
                     mesh: meshes.add(Mesh::from(shape::Cylinder {

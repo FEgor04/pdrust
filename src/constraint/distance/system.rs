@@ -6,6 +6,9 @@ use super::DistanceConstraint;
 
 const CONSTRAINTS_INTEGRATION_COUNT: u32 = 10;
 
+/// Solves all distances constraints.
+/// See [Physics Tutorial 3 - Constraints](https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/previousinformation/physics3constraints)
+/// from New Castle University for detailed explanation of what is going on here
 pub fn solve_distance_constraints(
     constraints: Query<&DistanceConstraint>,
     mut bodies_query: Query<
@@ -27,11 +30,11 @@ pub fn solve_distance_constraints(
 
             let v1 = rb1
                 .as_ref()
-                .map(|b| b.get_particle_body_velocity(constraint.first_body_offset, &t1))
+                .map(|b| b.get_velocity())
                 .unwrap_or_else(|| Vec3::ZERO);
             let v2 = rb2
                 .as_ref()
-                .map(|b| b.get_particle_body_velocity(constraint.second_body_offset, &t2))
+                .map(|b| b.get_velocity())
                 .unwrap_or_else(|| Vec3::ZERO);
 
             let omega1 = rb1
@@ -43,7 +46,6 @@ pub fn solve_distance_constraints(
                 .map(|b| b.get_angular_velocity(&t2))
                 .unwrap_or_else(|| Vec3::ZERO);
 
-            let b = 0.25;
 
             let m1_inversed = rb1.as_ref().map(|b| 1.0 / b.mass).unwrap_or_else(|| 0.0);
             let m2_inversed = rb2.as_ref().map(|b| 1.0 / b.mass).unwrap_or_else(|| 0.0);
@@ -64,13 +66,9 @@ pub fn solve_distance_constraints(
             let abn = ab.normalize();
 
             let current_length = ab.length();
-            if constraint.min_length <= current_length && current_length <= constraint.max_length {
+            if constraint.min_distance <= current_length && current_length <= constraint.max_distance {
                 continue;
             }
-            println!(
-                "current length is {}. max_length is {}",
-                current_length, constraint.max_length
-            );
 
             let j1 = -abn;
             let j2 = -r1.cross(abn);
@@ -84,8 +82,12 @@ pub fn solve_distance_constraints(
 
             let jv = j1.dot(v1) + j2.dot(omega1) + j3.dot(v2) + j4.dot(omega2);
 
-            let denom = -(jv + b);
-            let lambda = denom / constraint_mass;
+            // TODO: add support for min/max distance constraint
+            let distance_offset = current_length - constraint.max_distance;
+            let baumgarte_constant = 0.01;
+            let b = (baumgarte_constant / _constraint_dt) * distance_offset;
+
+            let lambda = -(jv + b) / constraint_mass;
 
             if let Some(mut body) = rb1 {
                 body.pulse += lambda * j1;
@@ -119,7 +121,7 @@ pub fn update_distance_constraints_transformation(
 
         // Cylinder diameter
         // Spring is rendred as a cylinder,
-        transform.scale.y = constraint_length_vec.length();
+        transform.scale.y = constraint.max_distance;
         transform.scale.x = 1.0;
         transform.scale.z = transform.scale.x;
         // translation is a position of cylinder center
