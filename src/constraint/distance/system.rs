@@ -46,7 +46,6 @@ pub fn solve_distance_constraints(
                 .map(|b| b.get_angular_velocity(&t2))
                 .unwrap_or_else(|| Vec3::ZERO);
 
-
             let m1_inversed = rb1.as_ref().map(|b| 1.0 / b.mass).unwrap_or_else(|| 0.0);
             let m2_inversed = rb2.as_ref().map(|b| 1.0 / b.mass).unwrap_or_else(|| 0.0);
 
@@ -65,10 +64,18 @@ pub fn solve_distance_constraints(
             let ab = x2 - x1;
             let abn = ab.normalize();
 
-            let current_length = ab.length();
-            if constraint.min_distance <= current_length && current_length <= constraint.max_distance {
+            let current_distance = ab.length();
+            if constraint.min_distance <= current_distance
+                && current_distance <= constraint.max_distance
+            {
                 continue;
             }
+
+            let target_distance = if current_distance < constraint.min_distance {
+                constraint.min_distance
+            } else {
+                constraint.max_distance
+            };
 
             let j1 = -abn;
             let j2 = -r1.cross(abn);
@@ -82,8 +89,7 @@ pub fn solve_distance_constraints(
 
             let jv = j1.dot(v1) + j2.dot(omega1) + j3.dot(v2) + j4.dot(omega2);
 
-            // TODO: add support for min/max distance constraint
-            let distance_offset = current_length - constraint.max_distance;
+            let distance_offset = current_distance - target_distance;
             let baumgarte_constant = 0.01;
             let b = (baumgarte_constant / _constraint_dt) * distance_offset;
 
@@ -120,7 +126,7 @@ pub fn update_distance_constraints_transformation(
         let constarint_mid = (x1 + x2) / 2.0;
 
         // Cylinder diameter
-        // Spring is rendred as a cylinder,
+        // Constraint is rendred as a cylinder,
         transform.scale.y = constraint.max_distance;
         transform.scale.x = 1.0;
         transform.scale.z = transform.scale.x;

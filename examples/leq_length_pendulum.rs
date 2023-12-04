@@ -41,7 +41,7 @@ fn setup(
         materials.add(Color::RED.into()),
         1.0,
         r,
-        Transform::from_xyz(l1 + l2, 0.0, 0.0),
+        Transform::from_xyz(l1, l2, 0.0),
         Vec3::ZERO,
         Vec3::ZERO,
     );

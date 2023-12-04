@@ -44,7 +44,7 @@ fn setup(
         1.0,
         1.0,
         1.0,
-        Transform::from_xyz(l1, 0.0, l2),
+        Transform::from_xyz(l1 + l2, 0.0, 0.0),
         Vec3::ZERO,
         Vec3::ZERO,
     );
