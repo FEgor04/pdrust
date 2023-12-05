@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::body::{Body, RigidBody};
 
-use super::PulleyConstraint;
+use super::{bundle::PulleyRender, PulleyConstraint};
 
 const CONSTRAINTS_INTEGRATION_COUNT: u32 = 16;
 
@@ -96,3 +96,33 @@ pub fn solve_pulley_constraints(
     }
 }
 
+pub fn update_pulley_constraints_transformation(
+    mut constraints: Query<(&PulleyConstraint, &PulleyRender)>,
+    mut bodies_query: Query<
+        (&mut Body, &mut Transform, Option<&mut RigidBody>),
+        Without<PulleyConstraint>,
+    >,
+    mut transforms: Query<&mut Transform, (Without<Body>, Without<RigidBody>)>,
+) {
+    for (constraint, render) in &mut constraints {
+        let [(_b1, t1, _rb1), (_b2, t2, _rb2)] = bodies_query
+            .get_many_mut([constraint.first_body, constraint.second_body])
+            .unwrap();
+
+        let [mut c1, mut c2] = transforms
+            .get_many_mut([render.first_thread, render.second_thread])
+            .unwrap();
+
+        let x1 = Body.body_to_world_coordinates(constraint.first_body_offset, &t1);
+        let x2 = Body.body_to_world_coordinates(constraint.second_body_offset, &t2);
+        let p = constraint.pulley_position;
+
+        c1.translation = (p + x1) / 2.0;
+        c1.scale.y = (p - x1).length();
+        c1.rotation = Quat::from_rotation_arc(Vec3::Y, (p - x1).normalize());
+
+        c2.translation = (p + x2) / 2.0;
+        c2.scale.y = (p - x2).length();
+        c2.rotation = Quat::from_rotation_arc(Vec3::Y, (p - x2).normalize());
+    }
+}

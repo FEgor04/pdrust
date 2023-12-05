@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+pub mod bundle;
 pub mod system;
 
 #[derive(Component)]
