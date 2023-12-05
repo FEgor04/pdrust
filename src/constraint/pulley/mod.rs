@@ -10,7 +10,6 @@ pub struct PulleyConstraint {
     first_body_offset: Vec3,
     second_body_offset: Vec3,
     max_distance: f32,
-    pulley_position: Vec3,
 }
 
 impl PulleyConstraint {
@@ -20,7 +19,6 @@ impl PulleyConstraint {
         first_body_offset: Vec3,
         second_body_offset: Vec3,
         max_distance: f32,
-        pulley_position: Vec3,
     ) -> Self {
         Self {
             first_body,
@@ -28,7 +26,6 @@ impl PulleyConstraint {
             first_body_offset,
             second_body_offset,
             max_distance,
-            pulley_position,
         }
     }
 }

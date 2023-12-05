@@ -1,14 +1,9 @@
-use bevy::{
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    prelude::*,
-};
+use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
-    body::{bundle::RigidBodyBundle, Body},
-    constraint::pulley::{bundle::PulleyBundle, PulleyConstraint},
-    springs::bundle::SpringBundle,
+    body::bundle::RigidBodyBundle,
+    constraint::pulley::bundle::PulleyBundle,
 };
-use std::f32::consts::PI;
 
 fn main() {
     App::new()
@@ -27,19 +22,19 @@ fn setup(
 ) {
     let l = 10.0;
     let m1 = 10.0;
-    let m2 = m1;
-    let m_central = m1;
+    let m2 = m1 * 2.0;
+    let m_central = m1 + m2;
 
     let equilibrium_pos = Vec3::new(0.0, -l / 3_f32.powf(0.5), 0.0);
     let equilibrium_offset: f32 = 0.0;
+    let b_central_pos = equilibrium_pos + Vec3::new(0.0, equilibrium_offset, 0.0);
 
     let pulley1_pos = Vec3::new(-l, 0.0, 0.0);
     let pulley2_pos = Vec3::new(l, 0.0, 0.0);
 
-    let b_central_pos = equilibrium_pos + Vec3::new(0.0, equilibrium_offset, 0.0);
 
     let constraint_distance = 3.0 * l;
-    let vertical_offset = constraint_distance - (l * l + equilibrium_offset.powi(2)).powf(0.5);
+    let vertical_offset = constraint_distance - (b_central_pos - pulley1_pos).length();
     let b1_pos = pulley1_pos + Vec3::new(0.0, -vertical_offset, 0.0);
     let b2_pos = pulley2_pos + Vec3::new(0.0, -vertical_offset, 0.0);
 
@@ -85,6 +80,7 @@ fn setup(
         &mut meshes,
         materials.add(Color::MIDNIGHT_BLUE.into()),
         materials.add(Color::MIDNIGHT_BLUE.into()),
+        materials.add(Color::BEIGE.into()),
         b1,
         central_body,
         Vec3::ZERO,
@@ -98,6 +94,7 @@ fn setup(
         &mut meshes,
         materials.add(Color::MIDNIGHT_BLUE.into()),
         materials.add(Color::MIDNIGHT_BLUE.into()),
+        materials.add(Color::BEIGE.into()),
         b2,
         central_body,
         Vec3::ZERO,
@@ -113,26 +110,8 @@ fn setup(
             radius: pulley_radius,
             ..default()
         })),
-        transform: Transform::from_translation(pulley1_pos),
-        ..default()
-    });
-
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::UVSphere {
-            radius: pulley_radius,
-            ..default()
-        })),
         material: materials.add(Color::CYAN.into()),
         transform: Transform::from_translation(equilibrium_pos),
-        ..default()
-    });
-
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::UVSphere {
-            radius: pulley_radius,
-            ..default()
-        })),
-        transform: Transform::from_translation(pulley2_pos),
         ..default()
     });
 

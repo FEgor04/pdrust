@@ -7,7 +7,7 @@ use super::{bundle::PulleyRender, PulleyConstraint};
 const CONSTRAINTS_INTEGRATION_COUNT: u32 = 16;
 
 pub fn solve_pulley_constraints(
-    constraints: Query<&PulleyConstraint>,
+    constraints: Query<(&PulleyConstraint, &Transform)>,
     mut bodies_query: Query<
         (&mut Body, &mut Transform, Option<&mut RigidBody>),
         Without<PulleyConstraint>,
@@ -17,10 +17,12 @@ pub fn solve_pulley_constraints(
     let dt = time.delta_seconds();
     let constraint_dt = dt / CONSTRAINTS_INTEGRATION_COUNT as f32;
     for _ in 0..CONSTRAINTS_INTEGRATION_COUNT {
-        for constraint in &constraints {
+        for (constraint, pulley_transform) in &constraints {
             let [(_b1, t1, rb1), (_b2, t2, rb2)] = bodies_query
                 .get_many_mut([constraint.first_body, constraint.second_body])
                 .unwrap();
+
+            let pulley_position = pulley_transform.translation;
 
             let x1 = Body.body_to_world_coordinates(constraint.first_body_offset, &t1);
             let x2 = Body.body_to_world_coordinates(constraint.second_body_offset, &t2);
@@ -58,14 +60,17 @@ pub fn solve_pulley_constraints(
             let r1 = x1 - t1.translation;
             let r2 = x2 - t2.translation;
 
-            let d1 = x1 - constraint.pulley_position;
-            let d2 = x2 - constraint.pulley_position;
+            let d1 = x1 - pulley_position;
+            let d2 = x2 - pulley_position;
 
             let target_distance = constraint.max_distance;
 
             let current_distance = d1.length() + d2.length();
             let distance_offset = current_distance - target_distance;
-            println!("distance_offset offset is {}", distance_offset);
+            if distance_offset <= 0.0 {
+                continue;
+            }
+            println!("relative distance_offset offset is {} %", distance_offset / target_distance * 100.0);
 
             let j1 = d1;
             let j2 = r1.cross(d1);
@@ -97,25 +102,17 @@ pub fn solve_pulley_constraints(
 }
 
 pub fn update_pulley_constraints_transformation(
-    mut constraints: Query<(&PulleyConstraint, &PulleyRender)>,
-    mut bodies_query: Query<
-        (&mut Body, &mut Transform, Option<&mut RigidBody>),
-        Without<PulleyConstraint>,
-    >,
-    mut transforms: Query<&mut Transform, (Without<Body>, Without<RigidBody>)>,
+    mut constraints: Query<(&PulleyConstraint, &PulleyRender, &Transform)>,
+    mut transforms: Query<&mut Transform, Without<PulleyConstraint>>,
 ) {
-    for (constraint, render) in &mut constraints {
-        let [(_b1, t1, _rb1), (_b2, t2, _rb2)] = bodies_query
-            .get_many_mut([constraint.first_body, constraint.second_body])
-            .unwrap();
-
-        let [mut c1, mut c2] = transforms
-            .get_many_mut([render.first_thread, render.second_thread])
+    for (constraint, render, pulley_transform) in &mut constraints {
+        let [t1, t2, mut c1, mut c2] = transforms
+            .get_many_mut([constraint.first_body, constraint.second_body, render.first_thread, render.second_thread])
             .unwrap();
 
         let x1 = Body.body_to_world_coordinates(constraint.first_body_offset, &t1);
         let x2 = Body.body_to_world_coordinates(constraint.second_body_offset, &t2);
-        let p = constraint.pulley_position;
+        let p = pulley_transform.translation;
 
         c1.translation = (p + x1) / 2.0;
         c1.scale.y = (p - x1).length();

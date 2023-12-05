@@ -6,6 +6,7 @@ use super::PulleyConstraint;
 pub struct PulleyBundle {
     pulley: PulleyConstraint,
     render: PulleyRender,
+    pbr: PbrBundle,
 }
 
 #[derive(Component)]
@@ -22,7 +23,7 @@ impl PulleyBundle {
         first_body_offset: Vec3,
         second_body_offset: Vec3,
         max_distance: f32,
-        pulley_position: Vec3,
+        pbr: PbrBundle,
         render: PulleyRender,
     ) -> Self {
         Self {
@@ -32,9 +33,9 @@ impl PulleyBundle {
                 first_body_offset,
                 second_body_offset,
                 max_distance,
-                pulley_position,
             },
             render,
+            pbr,
         }
     }
 
@@ -43,6 +44,7 @@ impl PulleyBundle {
         meshes: &mut ResMut<Assets<Mesh>>,
         m1: Handle<StandardMaterial>,
         m2: Handle<StandardMaterial>,
+        pulley_material: Handle<StandardMaterial>,
         first_body: Entity,
         second_body: Entity,
         first_body_offset: Vec3,
@@ -73,6 +75,14 @@ impl PulleyBundle {
                 ..default()
             })
             .id();
+
+        let pbr = PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::UVSphere { radius: 2.0 * thread_radius, ..default() })),
+            transform: Transform::from_translation(pulley_position),
+            material: pulley_material,
+            ..default()
+        };
+
         commands
             .spawn(PulleyBundle::new(
                 first_body,
@@ -80,7 +90,7 @@ impl PulleyBundle {
                 first_body_offset,
                 second_body_offset,
                 max_distance,
-                pulley_position,
+                pbr,
                 PulleyRender {
                     first_thread: first_thread_id,
                     second_thread: second_thread_id,
