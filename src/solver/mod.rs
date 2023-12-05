@@ -18,8 +18,8 @@ pub fn clean_forces_and_torque(mut query: Query<&mut RigidBody>) {
 
 pub fn step_in_simulation(mut query: Query<(&mut RigidBody, &mut Transform)>, time: Res<Time>) {
     let solver = EulerSolver {};
-    let slow_motion_koef = 1;
-    let substeps = 16;
+    let slow_motion_koef: f32 = 1.0;
+    let substeps = 1;
     let dt = time.delta_seconds() / slow_motion_koef as f32 / (substeps as f32);
     for _step in 0..substeps {
         for (body, transform) in query.iter_mut() {
@@ -32,6 +32,5 @@ pub fn gravity(mut query: Query<(&mut RigidBody, &Transform)>) {
     for (mut body, transform) in query.iter_mut() {
         let gravity = Vec3::new(0.0, -9.81, 0.0) * body.mass;
         body.apply_force_body_coords(Vec3::ZERO, gravity, transform)
-        // body.force += gravity;
     }
 }

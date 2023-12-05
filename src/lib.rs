@@ -1,7 +1,7 @@
 use bevy::prelude::*;
-use constraint::distance::system::{
+use constraint::{distance::system::{
     solve_distance_constraints, update_distance_constraints_transformation,
-};
+}, pulley::system::solve_pulley_constraints};
 use energy::{
     print_total_sum_of_energy, update_energy_for_rigid_bodies, update_energy_for_springs,
 };
@@ -25,12 +25,13 @@ impl bevy::prelude::Plugin for PDRustPlugin {
                 gravity.after(clean_forces_and_torque),
                 handle_spring_forces.after(gravity),
                 solve_distance_constraints.after(handle_spring_forces),
-                step_in_simulation.after(solve_distance_constraints),
+                solve_pulley_constraints.after(solve_distance_constraints),
+                step_in_simulation.after(solve_pulley_constraints),
                 update_energy_for_springs.after(update_spring_transformation),
                 update_energy_for_rigid_bodies.after(update_energy_for_springs),
                 print_total_sum_of_energy.after(update_energy_for_rigid_bodies),
                 update_spring_transformation.after(step_in_simulation),
-                update_distance_constraints_transformation.after(update_spring_transformation),
+                update_distance_constraints_transformation.after(step_in_simulation),
             ),
         );
     }
