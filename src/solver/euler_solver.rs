@@ -1,4 +1,4 @@
-use bevy::prelude::{Mat3, Mut, Quat, Resource, Transform, Vec3};
+use bevy::prelude::{Mut, Quat, Resource, Transform, Vec3};
 
 use crate::body::RigidBody;
 

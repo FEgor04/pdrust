@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
-    body::bundle::RigidBodyBundle,
-    constraint::pulley::bundle::PulleyBundle,
+    body::{bundle::RigidBodyBundle, RigidBody},
+    constraint::pulley::bundle::PulleyBundle, solver::step_in_simulation,
 };
 
 fn main() {
@@ -11,6 +11,7 @@ fn main() {
         .add_plugins(pdrust::PDRustPlugin)
         .add_plugins(PanOrbitCameraPlugin)
         .add_systems(Startup, setup)
+        // .add_systems(FixedUpdate, print_central_body_data.after(step_in_simulation))
         .run();
 }
 
@@ -20,20 +21,20 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let l = 10.0;
+    let half_l = 10.0;
     let m1 = 10.0;
-    let m2 = m1 * 2.0;
+    let m2 = 15.0;
     let m_central = m1 + m2;
 
-    let equilibrium_pos = Vec3::new(0.0, -l / 3_f32.powf(0.5), 0.0);
-    let equilibrium_offset: f32 = 0.0;
+    let equilibrium_pos = Vec3::new(0.0, -half_l / f32::sqrt(3.0), 0.0);
+    let equilibrium_offset: f32 = -0.0;
     let b_central_pos = equilibrium_pos + Vec3::new(0.0, equilibrium_offset, 0.0);
 
-    let pulley1_pos = Vec3::new(-l, 0.0, 0.0);
-    let pulley2_pos = Vec3::new(l, 0.0, 0.0);
+    let pulley1_pos = Vec3::new(-half_l, 0.0, 0.0);
+    let pulley2_pos = Vec3::new(half_l, 0.0, 0.0);
 
 
-    let constraint_distance = 3.0 * l;
+    let constraint_distance = 3.0 * half_l;
     let vertical_offset = constraint_distance - (b_central_pos - pulley1_pos).length();
     let b1_pos = pulley1_pos + Vec3::new(0.0, -vertical_offset, 0.0);
     let b2_pos = pulley2_pos + Vec3::new(0.0, -vertical_offset, 0.0);
@@ -129,13 +130,25 @@ fn setup(
     // camera
     commands.spawn((
         Camera3dBundle {
-            transform: Transform::from_xyz(0.0, 20.0, 15.0)
-                .looking_at(Vec3::from_array([0.0, 10.0, 0.0]), Vec3::Y),
+            transform: Transform::from_xyz(0.0, -10.0, 30.0)
+                .looking_at(Vec3::from_array([0.0, 0.0, 0.0]), Vec3::Y),
             ..default()
         },
         PanOrbitCamera {
-            focus: Vec3::from_array([0.0, 0.0, 0.0]),
+            focus: Vec3::from_array([0.0, -10.0, 0.0]),
             ..default()
         },
     ));
+}
+
+fn print_central_body_data(
+    query: Query<(&Transform, &RigidBody)>,
+    time: Res<Time>
+    ) {
+    for (t, rb) in &query {
+        if t.translation.x.abs() == 10.0 {
+            continue;
+        }
+        println!("{},{},{},{}", time.elapsed_seconds(), t.translation.x, t.translation.y, rb.get_velocity().length());
+    }
 }

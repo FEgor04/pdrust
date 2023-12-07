@@ -25,10 +25,8 @@ features = [
 
   # Platform-specific:
   "wayland",              # (Linux) Support Wayland windowing system
-  "bevy_dynamic_plugin",  # (Desktop) support for loading of `DynamicPlugin`s
 
   # Development/Debug features:
-  "dynamic_linking",   # Dynamic linking for faster compile-times
   "trace",             # Enable tracing for performance measurement
   "detailed_trace",    # Make traces more verbose
   "tonemapping_luts"

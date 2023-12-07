@@ -4,7 +4,7 @@ use crate::body::{Body, RigidBody};
 
 use super::{bundle::PulleyRender, PulleyConstraint};
 
-const CONSTRAINTS_INTEGRATION_COUNT: u32 = 16;
+const CONSTRAINTS_INTEGRATION_COUNT: u32 = 32;
 
 pub fn solve_pulley_constraints(
     constraints: Query<(&PulleyConstraint, &Transform)>,
@@ -70,7 +70,6 @@ pub fn solve_pulley_constraints(
             if distance_offset <= 0.0 {
                 continue;
             }
-            println!("relative distance_offset offset is {} %", distance_offset / target_distance * 100.0);
 
             let j1 = d1;
             let j2 = r1.cross(d1);
