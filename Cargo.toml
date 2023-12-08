@@ -2,34 +2,15 @@
 name = "pdrust"
 version = "0.1.0"
 edition = "2021"
+authors = ["Egor Fedorov <fegor2004@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies.bevy]
 version = "0.12.0"
-default-features = false
+default-features = true
 features = [
-  "multi-threaded",     # Run with multithreading
-  "bevy_asset",         # Assets management
-  "bevy_winit",         # Window management (cross-platform Winit backend)
-  "bevy_render",        # Rendering framework core
-  "bevy_core_pipeline", # Common rendering abstractions
-  "bevy_gizmos",        # Support drawing debug lines and shapes
-  "bevy_pbr",           # 3D (physically-based) rendering
-  "bevy_gltf",          # GLTF 3D assets format support
-  "bevy_text",          # Text/font rendering
-  "bevy_ui",            # UI toolkit
-  "default_font",       # Embed a minimal default font for text/UI
-
-  "async-io",             # Make bevy use `async-io` instead of `futures-lite`
-
-  # Platform-specific:
-  "wayland",              # (Linux) Support Wayland windowing system
-
-  # Development/Debug features:
-  "trace",             # Enable tracing for performance measurement
-  "detailed_trace",    # Make traces more verbose
-  "tonemapping_luts"
+  "wayland"
 ]
 
 [dev-dependencies]
