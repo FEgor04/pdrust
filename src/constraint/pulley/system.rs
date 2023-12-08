@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 
-use crate::body::{Body, RigidBody};
+use crate::{
+    body::{Body, RigidBody},
+    settings::SettingsResource,
+};
 
 use super::{bundle::PulleyRender, PulleyConstraint};
-
-const CONSTRAINTS_INTEGRATION_COUNT: u32 = 32;
 
 pub fn solve_pulley_constraints(
     constraints: Query<(&PulleyConstraint, &Transform)>,
@@ -13,10 +14,11 @@ pub fn solve_pulley_constraints(
         Without<PulleyConstraint>,
     >,
     time: Res<Time>,
+    settings: Res<SettingsResource>,
 ) {
-    let dt = time.delta_seconds();
-    let constraint_dt = dt / CONSTRAINTS_INTEGRATION_COUNT as f32;
-    for _ in 0..CONSTRAINTS_INTEGRATION_COUNT {
+    let dt = time.delta_seconds() / settings.slow_motion_koef;
+    let constraint_dt = dt / settings.constraints_substeps as f32;
+    for _ in 0..settings.constraints_substeps {
         for (constraint, pulley_transform) in &constraints {
             let [(_b1, t1, rb1), (_b2, t2, rb2)] = bodies_query
                 .get_many_mut([constraint.first_body, constraint.second_body])
@@ -83,7 +85,7 @@ pub fn solve_pulley_constraints(
 
             let jv = j1.dot(v1) + j2.dot(omega1) + j3.dot(v2) + j4.dot(omega2);
 
-            let baumgarte_constant = 0.1;
+            let baumgarte_constant = settings.baumgarte_constant;
             let b = (baumgarte_constant / constraint_dt) * distance_offset;
 
             let lambda = -(jv + b) / constraint_mass;
@@ -106,7 +108,12 @@ pub fn update_pulley_constraints_transformation(
 ) {
     for (constraint, render, pulley_transform) in &mut constraints {
         let [t1, t2, mut c1, mut c2] = transforms
-            .get_many_mut([constraint.first_body, constraint.second_body, render.first_thread, render.second_thread])
+            .get_many_mut([
+                constraint.first_body,
+                constraint.second_body,
+                render.first_thread,
+                render.second_thread,
+            ])
             .unwrap();
 
         let x1 = Body.body_to_world_coordinates(constraint.first_body_offset, &t1);

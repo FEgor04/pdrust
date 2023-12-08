@@ -2,7 +2,8 @@ use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, RigidBody},
-    constraint::pulley::bundle::PulleyBundle, solver::step_in_simulation,
+    constraint::pulley::bundle::PulleyBundle,
+    solver::step_in_simulation,
 };
 
 fn main() {
@@ -32,7 +33,6 @@ fn setup(
 
     let pulley1_pos = Vec3::new(-half_l, 0.0, 0.0);
     let pulley2_pos = Vec3::new(half_l, 0.0, 0.0);
-
 
     let constraint_distance = 3.0 * half_l;
     let vertical_offset = constraint_distance - (b_central_pos - pulley1_pos).length();
@@ -141,14 +141,17 @@ fn setup(
     ));
 }
 
-fn print_central_body_data(
-    query: Query<(&Transform, &RigidBody)>,
-    time: Res<Time>
-    ) {
+fn print_central_body_data(query: Query<(&Transform, &RigidBody)>, time: Res<Time>) {
     for (t, rb) in &query {
         if t.translation.x.abs() == 10.0 {
             continue;
         }
-        println!("{},{},{},{}", time.elapsed_seconds(), t.translation.x, t.translation.y, rb.get_velocity().length());
+        println!(
+            "{},{},{},{}",
+            time.elapsed_seconds(),
+            t.translation.x,
+            t.translation.y,
+            rb.get_velocity().length()
+        );
     }
 }

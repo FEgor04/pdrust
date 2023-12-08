@@ -77,7 +77,10 @@ impl PulleyBundle {
             .id();
 
         let pbr = PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::UVSphere { radius: 2.0 * thread_radius, ..default() })),
+            mesh: meshes.add(Mesh::from(shape::UVSphere {
+                radius: 2.0 * thread_radius,
+                ..default()
+            })),
             transform: Transform::from_translation(pulley_position),
             material: pulley_material,
             ..default()

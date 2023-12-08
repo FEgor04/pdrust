@@ -1,3 +1,5 @@
+use crate::settings::{IntergrationMethod, SettingsResource};
+
 use self::euler_solver::EulerSolver;
 use bevy::prelude::*;
 
@@ -16,10 +18,16 @@ pub fn clean_forces_and_torque(mut query: Query<&mut RigidBody>) {
     }
 }
 
-pub fn step_in_simulation(mut query: Query<(&mut RigidBody, &mut Transform)>, time: Res<Time>) {
-    let solver = EulerSolver {};
-    let slow_motion_koef: f32 = 1.0;
-    let substeps = 16;
+pub fn step_in_simulation(
+    mut query: Query<(&mut RigidBody, &mut Transform)>,
+    time: Res<Time>,
+    settings: Res<SettingsResource>,
+) {
+    let solver: &dyn SimulationSolver = match settings.method {
+        IntergrationMethod::EulerMethod => &EulerSolver {},
+    };
+    let slow_motion_koef: f32 = settings.slow_motion_koef;
+    let substeps = settings.integration_substeps;
     let dt = time.delta_seconds() / slow_motion_koef as f32 / (substeps as f32);
     for _step in 0..substeps {
         for (body, transform) in query.iter_mut() {
@@ -28,9 +36,10 @@ pub fn step_in_simulation(mut query: Query<(&mut RigidBody, &mut Transform)>, ti
     }
 }
 
-pub fn gravity(mut query: Query<(&mut RigidBody, &Transform)>) {
+pub fn gravity(mut query: Query<(&mut RigidBody, &Transform)>, settings: Res<SettingsResource>) {
+    let gravity_acc = settings.gravity_vector;
     for (mut body, transform) in query.iter_mut() {
-        let gravity = Vec3::new(0.0, -9.81, 0.0) * body.mass;
+        let gravity = gravity_acc * body.mass;
         body.apply_force_body_coords(Vec3::ZERO, gravity, transform)
     }
 }

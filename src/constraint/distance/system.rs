@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 
-use crate::body::{Body, RigidBody};
+use crate::{
+    body::{Body, RigidBody},
+    settings::SettingsResource,
+};
 
 use super::DistanceConstraint;
-
-const CONSTRAINTS_INTEGRATION_COUNT: u32 = 10;
 
 /// Solves all distances constraints.
 /// See [Physics Tutorial 3 - Constraints](https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/previousinformation/physics3constraints)
@@ -16,10 +17,11 @@ pub fn solve_distance_constraints(
         Without<DistanceConstraint>,
     >,
     time: Res<Time>,
+    settings: Res<SettingsResource>,
 ) {
-    let dt = time.delta_seconds();
-    let _constraint_dt = dt / CONSTRAINTS_INTEGRATION_COUNT as f32;
-    for _ in 0..CONSTRAINTS_INTEGRATION_COUNT {
+    let dt = time.delta_seconds() / settings.slow_motion_koef;
+    let _constraint_dt = dt / settings.constraints_substeps as f32;
+    for _ in 0..settings.constraints_substeps {
         for constraint in &constraints {
             let [(_b1, t1, rb1), (_b2, t2, rb2)] = bodies_query
                 .get_many_mut([constraint.first_body, constraint.second_body])
@@ -90,7 +92,7 @@ pub fn solve_distance_constraints(
             let jv = j1.dot(v1) + j2.dot(omega1) + j3.dot(v2) + j4.dot(omega2);
 
             let distance_offset = current_distance - target_distance;
-            let baumgarte_constant = 0.01;
+            let baumgarte_constant = settings.baumgarte_constant;
             let b = (baumgarte_constant / _constraint_dt) * distance_offset;
 
             let lambda = -(jv + b) / constraint_mass;
