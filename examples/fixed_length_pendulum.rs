@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, Body},
-    constraint::distance::bundle::DistanceConstraintBundle,
+    constraint::distance::bundle::DistanceConstraintBundle, settings::SettingsResource,
 };
 
 fn main() {
@@ -19,7 +19,13 @@ fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut settings: ResMut<SettingsResource>,
 ) {
+    settings.constraints_substeps = 32;
+    settings.baumgarte_constant = 0.01;
+    settings.integration_substeps = 32;
+    settings.print_energy_in_console = true;
+
     let l1 = 5.0;
     let l2 = 5.0;
 
@@ -81,8 +87,8 @@ fn setup(
         materials.add(Color::AZURE.into()),
         anchor,
         b1,
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(-0.5, 0., 0.0),
+        Vec3::ZERO,
+        Vec3::ZERO,
         l1,
         l1,
     );
@@ -93,8 +99,8 @@ fn setup(
         materials.add(Color::AZURE.into()),
         b1,
         b2,
-        Vec3::new(0.5, 0.0, 0.0),
-        Vec3::new(-0.5, 0.0, 0.0),
+        Vec3::ZERO,
+        Vec3::ZERO,
         l2,
         l2,
     );

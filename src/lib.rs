@@ -32,10 +32,10 @@ impl bevy::prelude::Plugin for PDRustPlugin {
                 step_in_simulation.after(solve_pulley_constraints),
                 update_energy_for_springs.after(update_spring_transformation),
                 update_energy_for_rigid_bodies.after(update_energy_for_springs),
-                print_total_sum_of_energy.after(update_energy_for_rigid_bodies),
                 update_spring_transformation.after(step_in_simulation),
                 update_distance_constraints_transformation.after(step_in_simulation),
                 update_pulley_constraints_transformation.after(step_in_simulation),
+                print_total_sum_of_energy.after(update_energy_for_rigid_bodies).run_if(| q: Res<SettingsResource> | q.print_energy_in_console),
             ),
         )
         .insert_resource(SettingsResource::default());

@@ -20,7 +20,7 @@ pub fn solve_distance_constraints(
     settings: Res<SettingsResource>,
 ) {
     let dt = time.delta_seconds() / settings.slow_motion_koef;
-    let _constraint_dt = dt / settings.constraints_substeps as f32;
+    let constraint_dt = dt / settings.constraints_substeps as f32;
     for _ in 0..settings.constraints_substeps {
         for constraint in &constraints {
             let [(_b1, t1, rb1), (_b2, t2, rb2)] = bodies_query
@@ -93,7 +93,7 @@ pub fn solve_distance_constraints(
 
             let distance_offset = current_distance - target_distance;
             let baumgarte_constant = settings.baumgarte_constant;
-            let b = (baumgarte_constant / _constraint_dt) * distance_offset;
+            let b = (baumgarte_constant / constraint_dt) * distance_offset;
 
             let lambda = -(jv + b) / constraint_mass;
 

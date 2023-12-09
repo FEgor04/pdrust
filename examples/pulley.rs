@@ -3,7 +3,6 @@ use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, RigidBody},
     constraint::pulley::bundle::PulleyBundle,
-    solver::step_in_simulation,
 };
 
 fn main() {

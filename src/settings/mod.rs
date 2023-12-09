@@ -8,6 +8,7 @@ pub struct SettingsResource {
     pub baumgarte_constant: f32,
     pub gravity_vector: Vec3,
     pub slow_motion_koef: f32,
+    pub print_energy_in_console: bool,
 }
 
 impl Default for SettingsResource {
@@ -19,6 +20,7 @@ impl Default for SettingsResource {
             baumgarte_constant: 0.1,
             slow_motion_koef: 1.0,
             gravity_vector: Vec3::new(0.0, -9.81, 0.0),
+            print_energy_in_console: false,
         }
     }
 }
