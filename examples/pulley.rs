@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, RigidBody},
-    constraint::pulley::bundle::PulleyBundle,
+    constraint::pulley::bundle::PulleyBundle, settings::SettingsResource,
 };
 
 fn main() {
@@ -20,11 +20,16 @@ fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut settings: ResMut<SettingsResource>,
 ) {
+    settings.print_energy_in_console = true;
+    settings.constraints_substeps = 32;
+    settings.integration_substeps = 32;
+
     let half_l = 10.0;
     let m1 = 10.0;
-    let m2 = 15.0;
-    let m_central = m1 + m2;
+    let m2 = m1;
+    let m_central = m1;
 
     let equilibrium_pos = Vec3::new(0.0, -half_l / f32::sqrt(3.0), 0.0);
     let equilibrium_offset: f32 = -0.0;

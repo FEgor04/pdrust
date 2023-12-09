@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, Body},
-    constraint::distance::bundle::DistanceConstraintBundle,
+    constraint::distance::bundle::DistanceConstraintBundle, settings::SettingsResource,
 };
 
 fn main() {
@@ -19,7 +19,10 @@ fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut settings: ResMut<SettingsResource>,
 ) {
+    settings.print_energy_in_console = true;
+
     let start = Vec3::new(-5.0, 0.0, 0.0);
     let cube_size = 0.2;
     let n = 50;
@@ -90,8 +93,8 @@ fn setup(
             bodies[i + 1],
             Vec3::ZERO,
             Vec3::ZERO,
-            0.0,
-            constrait_size * 1.1,
+            constrait_size,
+            constrait_size,
         );
     }
 

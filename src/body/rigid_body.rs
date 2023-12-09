@@ -62,14 +62,15 @@ impl RigidBody {
 
     /// Computes keenetic energy of the body
     pub fn compute_keenetic_energy(&self, transform: &Transform) -> f32 {
-        let angular_velocity = self.get_angular_velocity(transform);
-        let angular_component = 0.5 * angular_velocity.dot(angular_velocity);
-        self.mass * self.get_velocity().length_squared() / 2.0 + angular_component
+        let linear_component = 0.5 * self.pulse.length_squared() / self.mass;
+        let omega = self.get_angular_velocity(transform);
+        let angular_component = 0.5 * self.angular_momentum.dot(omega);
+        angular_component + linear_component
     }
 
     /// Computes potential energy of the body in the field of force of `gravity`.
     pub fn compute_potential_energy(&self, transform: &Transform, gravity: Vec3) -> f32 {
-        transform.translation.y * self.mass * gravity.length()
+        (transform.translation.y) * self.mass * gravity.length()
     }
 
     /// Computes total energy of the body

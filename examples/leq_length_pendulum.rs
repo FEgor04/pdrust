@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, Body},
-    constraint::distance::bundle::DistanceConstraintBundle,
+    constraint::distance::bundle::DistanceConstraintBundle, settings::SettingsResource,
 };
 
 fn main() {
@@ -19,17 +19,26 @@ fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut settings: ResMut<SettingsResource>,
 ) {
+    settings.print_energy_in_console = true;
+    settings.constraints_substeps = 32;
+    settings.integration_substeps = 32;
+    settings.baumgarte_constant = 0.05;
+
     let l1 = 3.0;
     let l2 = 2.0;
-    let r = 0.25;
+    let r1 = 0.25;
+    let m1 = 1.0;
+    let m2 = 1.0;
+    let r2 = r1 * m2 / m1;
 
     let b1 = RigidBodyBundle::spawn_new_sphere(
         &mut commands,
         &mut meshes,
         materials.add(Color::RED.into()),
-        1.0,
-        r,
+        m1,
+        r1,
         Transform::from_xyz(l1, 0.0, 0.0),
         Vec3::ZERO,
         Vec3::ZERO,
@@ -39,9 +48,9 @@ fn setup(
         &mut commands,
         &mut meshes,
         materials.add(Color::RED.into()),
-        1.0,
-        r,
-        Transform::from_xyz(l1, l2, 0.0),
+        m2,
+        r2,
+        Transform::from_xyz(l1 + l2, 0.0, 0.0),
         Vec3::ZERO,
         Vec3::ZERO,
     );
@@ -79,7 +88,7 @@ fn setup(
         anchor,
         b1,
         Vec3::ZERO,
-        Vec3::new(0.0, r, 0.0),
+        Vec3::ZERO,
         0.0,
         l1,
     );
@@ -90,8 +99,8 @@ fn setup(
         materials.add(Color::AZURE.into()),
         b1,
         b2,
-        Vec3::new(0.0, -r, 0.0),
-        Vec3::new(0.0, r, 0.0),
+        Vec3::ZERO,
+        Vec3::ZERO,
         0.0,
         l2,
     );

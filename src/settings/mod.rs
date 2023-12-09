@@ -17,7 +17,7 @@ impl Default for SettingsResource {
             method: IntergrationMethod::EulerMethod,
             integration_substeps: 8,
             constraints_substeps: 16,
-            baumgarte_constant: 0.1,
+            baumgarte_constant: 0.01,
             slow_motion_koef: 1.0,
             gravity_vector: Vec3::new(0.0, -9.81, 0.0),
             print_energy_in_console: false,
