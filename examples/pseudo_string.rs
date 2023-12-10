@@ -1,15 +1,13 @@
 /// This example shows a double pendulum made with springs.
 /// Try to change body attachment point to see what happens!
 mod utils;
-use utils::ExamplesUtilsPlugin;
-use bevy::{
-    prelude::*,
-};
+use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, Body, RigidBody},
     springs::bundle::SpringBundle,
 };
+use utils::ExamplesUtilsPlugin;
 
 fn main() {
     App::new()

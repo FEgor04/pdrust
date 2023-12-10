@@ -1,5 +1,4 @@
 mod utils;
-use utils::ExamplesUtilsPlugin;
 use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
@@ -7,6 +6,7 @@ use pdrust::{
     constraint::distance::bundle::DistanceConstraintBundle,
     settings::SettingsResource,
 };
+use utils::ExamplesUtilsPlugin;
 
 fn main() {
     App::new()
