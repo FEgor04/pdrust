@@ -1,7 +1,8 @@
 /// This example shows a double pendulum made with springs.
 /// Try to change body attachment point to see what happens!
+mod utils;
+use utils::ExamplesUtilsPlugin;
 use bevy::{
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
 };
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
@@ -15,8 +16,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(pdrust::PDRustPlugin)
         .add_plugins(PanOrbitCameraPlugin)
-        .add_plugins(LogDiagnosticsPlugin::default())
-        .add_plugins(FrameTimeDiagnosticsPlugin::default())
+        .add_plugins(ExamplesUtilsPlugin)
         .add_systems(Startup, setup)
         .run();
 }

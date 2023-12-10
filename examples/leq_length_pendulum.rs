@@ -1,3 +1,5 @@
+mod utils;
+use utils::ExamplesUtilsPlugin;
 use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
@@ -11,6 +13,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(pdrust::PDRustPlugin)
         .add_plugins(PanOrbitCameraPlugin)
+        .add_plugins(ExamplesUtilsPlugin)
         .add_systems(Startup, setup)
         .run();
 }

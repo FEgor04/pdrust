@@ -5,6 +5,8 @@ use pdrust::{
     constraint::pulley::bundle::PulleyBundle,
     settings::SettingsResource,
 };
+mod utils;
+use utils::ExamplesUtilsPlugin;
 
 fn main() {
     App::new()
@@ -12,7 +14,7 @@ fn main() {
         .add_plugins(pdrust::PDRustPlugin)
         .add_plugins(PanOrbitCameraPlugin)
         .add_systems(Startup, setup)
-        // .add_systems(FixedUpdate, print_central_body_data.after(step_in_simulation))
+        .add_plugins(ExamplesUtilsPlugin)
         .run();
 }
 
@@ -146,17 +148,3 @@ fn setup(
     ));
 }
 
-fn print_central_body_data(query: Query<(&Transform, &RigidBody)>, time: Res<Time>) {
-    for (t, rb) in &query {
-        if t.translation.x.abs() == 10.0 {
-            continue;
-        }
-        println!(
-            "{},{},{},{}",
-            time.elapsed_seconds(),
-            t.translation.x,
-            t.translation.y,
-            rb.get_velocity().length()
-        );
-    }
-}
