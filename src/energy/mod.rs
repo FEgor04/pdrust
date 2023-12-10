@@ -2,7 +2,8 @@ use bevy::prelude::*;
 
 use crate::{
     body::{Body, RigidBody},
-    springs::Spring, settings::SettingsResource,
+    settings::SettingsResource,
+    springs::Spring,
 };
 
 /// Something that has an energy that can be computed.
@@ -14,6 +15,12 @@ pub struct Energy {
 impl Default for Energy {
     fn default() -> Self {
         return Self { energy: 0.0 };
+    }
+}
+
+impl Energy {
+    pub fn get_energy(&self) -> f32 {
+        return self.energy;
     }
 }
 
@@ -38,14 +45,9 @@ pub fn update_energy_for_springs(
 
 pub fn update_energy_for_rigid_bodies(
     mut bodies_query: Query<(&RigidBody, &Body, &Transform, &mut Energy)>,
-    settings: Res<SettingsResource>
+    settings: Res<SettingsResource>,
 ) {
     for (rb, _b, t, mut e) in bodies_query.iter_mut() {
         e.energy = rb.compute_energy(t, settings.gravity_vector);
     }
-}
-
-pub fn print_total_sum_of_energy(energy_query: Query<&Energy>) {
-    let _sum: f32 = energy_query.iter().map(|f| f.energy).sum();
-    println!("Total sum of energy: {}", _sum)
 }

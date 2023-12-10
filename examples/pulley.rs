@@ -2,7 +2,8 @@ use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use pdrust::{
     body::{bundle::RigidBodyBundle, RigidBody},
-    constraint::pulley::bundle::PulleyBundle, settings::SettingsResource,
+    constraint::pulley::bundle::PulleyBundle,
+    settings::SettingsResource,
 };
 
 fn main() {

@@ -3,9 +3,7 @@ use constraint::{
     distance::system::{solve_distance_constraints, update_distance_constraints_transformation},
     pulley::system::{solve_pulley_constraints, update_pulley_constraints_transformation},
 };
-use energy::{
-    print_total_sum_of_energy, update_energy_for_rigid_bodies, update_energy_for_springs,
-};
+use energy::{update_energy_for_rigid_bodies, update_energy_for_springs};
 use settings::SettingsResource;
 use solver::{clean_forces_and_torque, gravity, step_in_simulation};
 use springs::systems::{handle_spring_forces, update_spring_transformation};
@@ -35,7 +33,6 @@ impl bevy::prelude::Plugin for PDRustPlugin {
                 update_spring_transformation.after(step_in_simulation),
                 update_distance_constraints_transformation.after(step_in_simulation),
                 update_pulley_constraints_transformation.after(step_in_simulation),
-                print_total_sum_of_energy.after(update_energy_for_rigid_bodies).run_if(| q: Res<SettingsResource> | q.print_energy_in_console),
             ),
         )
         .insert_resource(SettingsResource::default());

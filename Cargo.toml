@@ -34,7 +34,9 @@ features = [
 
 
 [dev-dependencies]
-bevy_panorbit_camera="0.9.0"
+# Dependencies for examples
+bevy_panorbit_camera={ version = "0.9.0", features=["bevy_egui"] } 
+bevy_egui="0.23"
 
 [profile.dev]
 opt-level = 1
