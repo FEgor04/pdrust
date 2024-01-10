@@ -1,4 +1,4 @@
-EXAMPLES=(fixed_length_bridge fixed_length_pendulum leq_length_pendulum pseudo_string pulley springs_double_pendulum)
+EXAMPLES=(fixed_length_bridge fixed_length_pendulum leq_length_pendulum pulley springs_double_pendulum)
 echo "<!doctype html>" > ./out/examples/index.html
 echo "<html>" >> ./out/examples/index.html
 echo "<head>" >> ./out/examples/index.html

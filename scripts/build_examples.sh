@@ -1,5 +1,5 @@
 #!/bin/bash
-EXAMPLES=(fixed_length_bridge fixed_length_pendulum leq_length_pendulum pseudo_string pulley springs_double_pendulum)
+EXAMPLES=(fixed_length_bridge fixed_length_pendulum leq_length_pendulum pulley springs_double_pendulum)
 cargo build --examples --release --target=wasm32-unknown-unknown
 
 mkdir -p out/examples
